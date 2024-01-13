@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import NfcManager, { Ndef, NfcEvents, NfcTech } from 'react-native-nfc-manager';
-
-
-
+import NfcManager, { NfcTech, nfcManager } from 'react-native-nfc-manager';
+import { Buffer } from 'buffer';
 
 export default function App() {
 
@@ -39,21 +37,45 @@ export default function App() {
 
   const readTag = async () => {
     // await NfcManager.registerTagEvent();
-    // setStatus('WAITING')
+    setStatus('WAITING')
     try {
       // register for the NFC tag with NDEF in it
-      await NfcManager.requestTechnology(NfcTech.NfcA);
+      await NfcManager.requestTechnology([ NfcTech.MifareClassic ]);
       // the resolved tag object will contain `ndefMessage` property
-      // const tag = await NfcManager.getTag();
-      // console.warn('Tag found', tag);
-      // const block = [10]
-      // const msg = await NfcManager.nfcAHandler.transceive(block)
-      // console.log(msg)
+      const tag = await NfcManager.getTag();
+      console.warn('Tag found', tag);
+
+      // console.warn(await NfcManager.ndefHandler)
+      // console.warn(await NfcManager.ndefFormatableHandlerAndroid)
+      // console.warn(await NfcManager.nfcAHandler)
+      // console.warn(await NfcManager.isoDepHandler)
+      // console.warn(NfcManager.mifareClassicHandlerAndroid.)
+      // console.warn(await NfcManager.mifareClassicGetBlockCountInSector(1))
+      const sectorCount = await NfcManager.mifareClassicHandlerAndroid.mifareClassicGetSectorCount()
+      console.warn('sectorCount ', sectorCount)
+
+      for (let i = 0; i < sectorCount; i++) {
+        try {
+          console.warn('sector ', i)
+
+          const block = await NfcManager.mifareClassicHandlerAndroid.mifareClassicSectorToBlock(i)
+          const data = await NfcManager.mifareClassicHandlerAndroid.mifareClassicReadBlock(block)
+
+          console.warn('block ', block)
+          console.warn('data ', data)
+
+          console.warn(Buffer.from(data).toString())
+        } catch (ex) {
+          console.warn('Oops!', ex);
+        }
+      }
+
     } catch (ex) {
       console.warn('Oops!', ex);
     } finally {
       // stop the nfc scanning
       NfcManager.cancelTechnologyRequest();
+      setStatus('IDLE')
     }
 
   }
