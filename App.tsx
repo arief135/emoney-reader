@@ -40,10 +40,35 @@ export default function App() {
     setStatus('WAITING')
     try {
       // register for the NFC tag with NDEF in it
-      await NfcManager.requestTechnology([ NfcTech.MifareClassic ]);
+      await NfcManager.requestTechnology([ NfcTech.IsoDep ]);
       // the resolved tag object will contain `ndefMessage` property
       const tag = await NfcManager.getTag();
       console.warn('Tag found', tag);
+
+      // read emoney number
+      // const raw = await NfcManager.transceive([ 0, -77, 0, 0, 63 ])
+
+      // read saldo emoney: amount, date , time
+      // const raw = await NfcManager.transceive([ 0, -75, 0, 0, 10 ])
+
+      // emoney
+      // const raw = await NfcManager.transceive([ 0, -78, 0, 0, 40 ])
+
+      // emoney
+      const raw = await NfcManager.transceive([ 0, -92, 4, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1 ])
+
+      console.warn(raw.length)
+      console.warn(raw)
+
+      for (let i = 0; i < raw.length; i++) {
+        const e = raw[i];
+        const h = e.toString(16)
+        // const h = parseInt(e.toString(16), 16)
+        console.warn(h)
+      }
+
+
+      // console.warn(await NfcManager.transceive([ 106,130 ]))
 
       // console.warn(await NfcManager.ndefHandler)
       // console.warn(await NfcManager.ndefFormatableHandlerAndroid)
@@ -51,24 +76,24 @@ export default function App() {
       // console.warn(await NfcManager.isoDepHandler)
       // console.warn(NfcManager.mifareClassicHandlerAndroid.)
       // console.warn(await NfcManager.mifareClassicGetBlockCountInSector(1))
-      const sectorCount = await NfcManager.mifareClassicHandlerAndroid.mifareClassicGetSectorCount()
-      console.warn('sectorCount ', sectorCount)
+      // const sectorCount = await NfcManager.mifareClassicHandlerAndroid.mifareClassicGetSectorCount()
+      // console.warn('sectorCount ', sectorCount)
 
-      for (let i = 0; i < sectorCount; i++) {
-        try {
-          console.warn('sector ', i)
+      // for (let i = 0; i < sectorCount; i++) {
+      //   try {
+      //     console.warn('sector ', i)
 
-          const block = await NfcManager.mifareClassicHandlerAndroid.mifareClassicSectorToBlock(i)
-          const data = await NfcManager.mifareClassicHandlerAndroid.mifareClassicReadBlock(block)
+      //     const block = await NfcManager.mifareClassicHandlerAndroid.mifareClassicSectorToBlock(i)
+      //     const data = await NfcManager.mifareClassicHandlerAndroid.mifareClassicReadBlock(block)
 
-          console.warn('block ', block)
-          console.warn('data ', data)
+      //     console.warn('block ', block)
+      //     console.warn('data ', data)
 
-          console.warn(Buffer.from(data).toString())
-        } catch (ex) {
-          console.warn('Oops!', ex);
-        }
-      }
+      //     console.warn(Buffer.from(data).toString())
+      //   } catch (ex) {
+      //     console.warn('Oops!', ex);
+      //   }
+      // }
 
     } catch (ex) {
       console.warn('Oops!', ex);
