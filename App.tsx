@@ -4,6 +4,11 @@ import NfcManager, { NfcTech, nfcManager } from 'react-native-nfc-manager';
 import { Buffer } from 'buffer';
 
 export default function App() {
+  
+}
+
+
+function App2() {
 
   const [ hasNfc, setHasNFC ] = useState(false);
   const [ status, setStatus ] = useState('IDLE');
